@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SChallenge</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_cadastro">Cadastro</string>
+    <string name="btn_confirmar">Confirmar</string>
+</resources>
