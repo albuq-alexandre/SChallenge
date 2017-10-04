@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Toast.makeText(this, "Passando pelo onStart...", Toast.LENGTH_LONG);
-        
+
     }
 
     @Override
