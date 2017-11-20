@@ -24,14 +24,7 @@
         <activity android:name=".activities.telaCadastro" />
         <activity android:name=".activities.ListaActivity"></activity>
 
-        <!--meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/-->
-
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-        <activity
+                <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
             <intent-filter>
