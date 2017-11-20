@@ -4,4 +4,6 @@
     <string name="btn_cadastro">Cadastro</string>
     <string name="btn_confirmar">Confirmar</string>
     <string name="btn_incluir">Incluir Item</string>
+    <string name="facebook_app_id">319072165239392</string>
+    <string name="fb_login_protocol_scheme">fb319072165239392</string>
 </resources>

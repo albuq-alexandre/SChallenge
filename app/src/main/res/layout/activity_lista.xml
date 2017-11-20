@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.iesb.a1631088056.schallenge.ListaActivity"
+    tools:context="br.iesb.a1631088056.schallenge.activities.ListaActivity"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
