@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "690801052704",
+    "firebase_url": "https://schallenge-iesb-pos.firebaseio.com",
+    "project_id": "schallenge-iesb-pos",
+    "storage_bucket": "schallenge-iesb-pos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690801052704:android:192a53973af78e16",
+        "android_client_info": {
+          "package_name": "br.iesb.a1631088056.schallenge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690801052704-0g699cf6sfmmgv1caud66kjij05b01rj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.iesb.a1631088056.schallenge",
+            "certificate_hash": "7a07090a8ad6d2a544e5674e77b44f35d1cfa406"
+          }
+        },
+        {
+          "client_id": "690801052704-otfd8h4ih85gb25phbv5nqupe2stghv6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjxs-7g0YFUne1d6rnCFL_yMn9O1FuS7Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "690801052704-otfd8h4ih85gb25phbv5nqupe2stghv6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

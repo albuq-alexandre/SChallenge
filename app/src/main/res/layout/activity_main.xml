@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="br.iesb.a1631088056.schallenge.activities.utils.MainActivity"
+    tools:context="br.iesb.a1631088056.schallenge.activities.MainActivity"
     android:baselineAligned="false"
     android:weightSum="1">
 
