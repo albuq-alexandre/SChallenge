@@ -1,7 +1,6 @@
 package br.iesb.a1631088056.schallenge.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+
     private static final String TAG = "MainActivity-login";
     private static final int RC_SIGN_IN = 9001;
 
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 btnCadastro.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(new Intent( MainActivity.this, telaCadastro.class));
+                        startActivity(new Intent( MainActivity.this, TelaCadastro.class));
                     }
                 });
 

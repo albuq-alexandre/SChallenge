@@ -4,11 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import br.iesb.a1631088056.schallenge.R;
 import br.iesb.a1631088056.schallenge.fragments.CellBemFragment.OnListFragmentInteractionListener;
-import br.iesb.a1631088056.schallenge.fragments.dummy.DummyContent.DummyItem;
+import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
@@ -37,8 +38,11 @@ public class MyCellBemRecyclerViewAdapter extends RecyclerView.Adapter<MyCellBem
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mCodBemView.setText(mValues.get(position).mCodBem);
+        holder.mPBMSView.setText(mValues.get(position).mPBMS);
+        holder.mNomeBemView.setText(mValues.get(position).mNomeBem);
+        holder.mAcessoryCellBem.setImageResource(android.R.drawable.checkbox_on_background);
+
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,20 +63,35 @@ public class MyCellBemRecyclerViewAdapter extends RecyclerView.Adapter<MyCellBem
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mCodBemView;
+        public final TextView mPBMSView;
+        public final TextView mNomeBemView;
+        public final ImageView mCategoryBem;
+        public final ImageView mAcessoryCellBem;
         public DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mCodBemView = (TextView) view.findViewById(R.id.txtViewCodBem);
+            mPBMSView = (TextView) view.findViewById(R.id.txtViewPBMS);
+            mNomeBemView = (TextView) view.findViewById(R.id.txtViewNomeBem);
+            mCategoryBem = (ImageView) view.findViewById(R.id.imgViewCategoryBem);
+            mAcessoryCellBem = (ImageView) view.findViewById(R.id.imgViewAccessoryIcon);
+
+
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mNomeBemView.getText() + "'";
         }
+
+
+
+    }
+
+    public OnListFragmentInteractionListener getmListener() {
+        return mListener;
     }
 }

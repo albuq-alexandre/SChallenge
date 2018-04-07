@@ -11,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import br.iesb.a1631088056.schallenge.R;
-import br.iesb.a1631088056.schallenge.fragments.dummy.DummyContent;
-import br.iesb.a1631088056.schallenge.fragments.dummy.DummyContent.DummyItem;
-
-import java.util.List;
+import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent;
+import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -92,6 +90,7 @@ public class CellBemFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

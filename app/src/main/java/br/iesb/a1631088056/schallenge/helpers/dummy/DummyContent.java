@@ -1,4 +1,4 @@
-package br.iesb.a1631088056.schallenge.fragments.dummy;
+package br.iesb.a1631088056.schallenge.helpers.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,19 +34,19 @@ public class DummyContent {
 
     private static void addItem(DummyItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.mCodBem, item);
     }
 
     private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
+        return new DummyItem(String.format("%013d",position), "70.10.065.284244", makeDetails(position));
     }
 
     private static String makeDetails(int position) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
+        builder.append("Terminal Múltiplas Funções ").append(position);
+        //for (int i = 0; i < position; i++) {
+        //    builder.append("\nMore details information here.");
+        //}
         return builder.toString();
     }
 
@@ -54,19 +54,21 @@ public class DummyContent {
      * A dummy item representing a piece of content.
      */
     public static class DummyItem {
-        public final String id;
-        public final String content;
-        public final String details;
+        public final String mCodBem;
+        public final String mPBMS;
+        public final String mNomeBem;
+        public final int mCategoryBem;
 
-        public DummyItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
+        public DummyItem(String id, String pPBMS, String pNomeBem) {
+            this.mCodBem = id;
+            this.mPBMS = pPBMS;
+            this.mNomeBem = pNomeBem;
+            this.mCategoryBem = 1;
         }
 
         @Override
         public String toString() {
-            return content;
+            return mCodBem + " - " + mNomeBem;
         }
     }
 }

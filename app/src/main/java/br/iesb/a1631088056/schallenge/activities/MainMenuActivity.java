@@ -3,7 +3,11 @@ package br.iesb.a1631088056.schallenge.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,10 +28,13 @@ import com.squareup.picasso.Picasso;
 
 
 import br.iesb.a1631088056.schallenge.R;
+import br.iesb.a1631088056.schallenge.fragments.CellBemFragment;
+import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+import br.iesb.a1631088056.schallenge.adapters.FragmentAdapter;
 
 public class MainMenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements OnNavigationItemSelectedListener, CellBemFragment.OnListFragmentInteractionListener {
 
     FirebaseAuth mAuth;
     FirebaseUser mUser;
@@ -68,13 +75,19 @@ public class MainMenuActivity extends AppCompatActivity
                         .transform(new CropCircleTransformation())
                         .into(mUserAvatar);
             } catch (Exception e) {
-                Log.e(TAG, mUser.getDisplayName());
+//                Log.e(TAG, mUser.getDisplayName());
                 Log.e(TAG, mUser.getEmail());
-                Log.e(TAG, mUser.getPhotoUrl().toString());
+                //Log.e(TAG, "URLFoto: "+ mUser.getPhotoUrl().toString());
                 Log.e(TAG, "onCreate: " + e.getMessage());
             }
         }
 
+        ViewPager vp_pages= (ViewPager) findViewById(R.id.vp_pages);
+        PagerAdapter pagerAdapter=new FragmentAdapter(getSupportFragmentManager());
+        vp_pages.setAdapter(pagerAdapter);
+
+        TabLayout tbl_pages= (TabLayout) findViewById(R.id.tbl_pages);
+        tbl_pages.setupWithViewPager(vp_pages);
 
 
 
@@ -159,5 +172,10 @@ public class MainMenuActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
     }
 }
