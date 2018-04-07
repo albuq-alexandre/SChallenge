@@ -25,7 +25,7 @@ public class telaCadastro extends AppCompatActivity {
         btnOKCadastro = (Button) findViewById(R.id.btnOkCadastro);
         btnVoltar = (Button) findViewById(R.id.btnVoltar);
         email = (EditText) findViewById(R.id.txtCadEmail);
-        pwd = (EditText) findViewById(R.id.editTextpwd);
+        pwd = (EditText) findViewById(R.id.editCadTextpwd);
         pwdC = (EditText) findViewById(R.id.editTextpwdConf);
 
         btnOKCadastro.setOnClickListener(new View.OnClickListener(){

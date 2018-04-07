@@ -15,6 +15,10 @@
       },
       "oauth_client": [
         {
+          "client_id": "690801052704-478n1evrosogtstuiin7i0cql2486pcf.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "690801052704-0g699cf6sfmmgv1caud66kjij05b01rj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -40,7 +44,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "690801052704-otfd8h4ih85gb25phbv5nqupe2stghv6.apps.googleusercontent.com",
+              "client_id": "690801052704-478n1evrosogtstuiin7i0cql2486pcf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
