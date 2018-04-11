@@ -1,7 +1,11 @@
 package br.iesb.a1631088056.schallenge.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.design.widget.Snackbar;
@@ -21,17 +25,25 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import br.iesb.a1631088056.schallenge.R;
 import br.iesb.a1631088056.schallenge.fragments.CellBemFragment;
 import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import br.iesb.a1631088056.schallenge.adapters.FragmentAdapter;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MainMenuActivity extends AppCompatActivity
         implements OnNavigationItemSelectedListener, CellBemFragment.OnListFragmentInteractionListener {
@@ -41,8 +53,9 @@ public class MainMenuActivity extends AppCompatActivity
     ImageView mUserAvatar;
     TextView mUserName, mUserEmail;
     NavigationView mNavigationView;
+    private final int SELECT_PHOTO = 1;
     private static final String TAG = "MainMenuActivity";
-
+    private StorageReference mStorageRef;
 
 
     @Override
@@ -62,6 +75,10 @@ public class MainMenuActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        //Firebase Storage
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+
 
 
         if (mUser != null ) {
@@ -75,9 +92,7 @@ public class MainMenuActivity extends AppCompatActivity
                         .transform(new CropCircleTransformation())
                         .into(mUserAvatar);
             } catch (Exception e) {
-//                Log.e(TAG, mUser.getDisplayName());
                 Log.e(TAG, mUser.getEmail());
-                //Log.e(TAG, "URLFoto: "+ mUser.getPhotoUrl().toString());
                 Log.e(TAG, "onCreate: " + e.getMessage());
             }
         }
@@ -115,6 +130,16 @@ public class MainMenuActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mUserAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent iAvatarPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                iAvatarPickerIntent.setType("image/*");
+                startActivityForResult(iAvatarPickerIntent, SELECT_PHOTO);
+            }
+        });
+
     }
 
     @Override
@@ -177,5 +202,56 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch(requestCode) {
+            case SELECT_PHOTO:
+                if(resultCode == RESULT_OK){
+                    try {
+                        final Uri imageUri = imageReturnedIntent.getData();
+                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+
+                        // TODO: LOAD NO FIREBASE STORAGE
+                        /*FirebaseUser user = mAuth.getCurrentUser();
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setPhotoUri(imageUri)
+                                .build();
+                        try {
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "Foto atualizada");
+                                            }
+                                        }
+                                    });
+                        } catch (Exception e) {
+                            Log.d(TAG, "Erro na foto" + e.getMessage());
+                        }
+*/
+
+
+
+                        Picasso.with(this.getApplicationContext())
+                                .load(imageUri)
+                                .transform(new CropCircleTransformation())
+                                .into(mUserAvatar);
+
+
+
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+        }
     }
 }
