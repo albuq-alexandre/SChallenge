@@ -55,6 +55,7 @@ public class MainMenuActivity extends AppCompatActivity
     NavigationView mNavigationView;
     private final int SELECT_PHOTO = 1;
     private static final String TAG = "MainMenuActivity";
+    private final int PICK_IMAGE_REQUEST = 71;
     private StorageReference mStorageRef;
 
 
@@ -93,7 +94,7 @@ public class MainMenuActivity extends AppCompatActivity
                         .into(mUserAvatar);
             } catch (Exception e) {
                 Log.e(TAG, mUser.getEmail());
-                Log.e(TAG, "onCreate: " + e.getMessage());
+                Log.e(TAG, "erro AccountHeather: " + e.getMessage());
             }
         }
 
@@ -134,9 +135,13 @@ public class MainMenuActivity extends AppCompatActivity
         mUserAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent iAvatarPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                /*Intent iAvatarPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 iAvatarPickerIntent.setType("image/*");
-                startActivityForResult(iAvatarPickerIntent, SELECT_PHOTO);
+                startActivityForResult(iAvatarPickerIntent., SELECT_PHOTO);*/
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Escolha a Imagem"), PICK_IMAGE_REQUEST);
             }
         });
 
@@ -209,7 +214,7 @@ public class MainMenuActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
         switch(requestCode) {
-            case SELECT_PHOTO:
+            case PICK_IMAGE_REQUEST:
                 if(resultCode == RESULT_OK){
                     try {
                         final Uri imageUri = imageReturnedIntent.getData();
@@ -218,7 +223,7 @@ public class MainMenuActivity extends AppCompatActivity
 
 
                         // TODO: LOAD NO FIREBASE STORAGE
-                        /*FirebaseUser user = mAuth.getCurrentUser();
+                        FirebaseUser user = mAuth.getCurrentUser();
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                 .setPhotoUri(imageUri)
                                 .build();
@@ -235,7 +240,6 @@ public class MainMenuActivity extends AppCompatActivity
                         } catch (Exception e) {
                             Log.d(TAG, "Erro na foto" + e.getMessage());
                         }
-*/
 
 
 

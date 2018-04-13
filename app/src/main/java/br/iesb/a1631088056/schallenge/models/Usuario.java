@@ -1,16 +1,32 @@
 package br.iesb.a1631088056.schallenge.models;
 
-import java.util.List;
+import com.google.firebase.database.IgnoreExtraProperties;
 
+@IgnoreExtraProperties
 public class Usuario {
 
-    private String id, nome, email, avatarURL;
-    private List<String> inventariadas;
 
-    public Usuario(String id, String nome, String email) {
-        this.id = id;
-        this.nome = nome;
+
+    public String firebaseUid, id, nome, email, avatarURL;
+//    public Map <String, Object> inventariadas;
+
+    public Usuario() {
+        // construtor padrão requerido
+    }
+
+    public Usuario(String firebaseUid, String mnome, String email) {
+        this.firebaseUid = firebaseUid;
+        this.nome = mnome;
         this.email = email;
+
+    }
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
     }
 
     public String getId() {
@@ -45,11 +61,19 @@ public class Usuario {
         this.avatarURL = avatarURL;
     }
 
-    public List<String> getInventariadas() {
+/*
+    // TODO: Implementar a Classe Inventariadas
+    public Map<String, Object> getInventariadas() {
         return inventariadas;
     }
 
     public void addInventariadas(String inventariada) {
-        this.inventariadas.add(inventariada);
+        this.inventariadas.put("Inventariada", inventariada);
+    }
+    */
+
+    @Override
+    public String toString() {
+        return this.getFirebaseUid();
     }
 }

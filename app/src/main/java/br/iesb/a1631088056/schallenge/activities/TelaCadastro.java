@@ -1,7 +1,8 @@
 package br.iesb.a1631088056.schallenge.activities;
 
 import android.content.Intent;
-import android.net.Uri;
+
+
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,8 +22,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import br.iesb.a1631088056.schallenge.R;
-
-
+import br.iesb.a1631088056.schallenge.helpers.ManageUsuarioFirebaseDB;
+import br.iesb.a1631088056.schallenge.models.Usuario;
 
 
 public class TelaCadastro extends AppCompatActivity {
@@ -32,6 +33,7 @@ public class TelaCadastro extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private UserProfileChangeRequest mProfile;
     private static final String TAG = "TelaCadastro";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,14 @@ public class TelaCadastro extends AppCompatActivity {
         mNome = (EditText) findViewById(R.id.txtNome);
         pwd = (EditText) findViewById(R.id.editCadTextpwd);
         pwdC = (EditText) findViewById(R.id.editTextpwdConf);
+
+        // Setup Firebase auth
         mAuth = FirebaseAuth.getInstance();
+
+
+
+        //Setup comportamento dos Botoes;
+
 
         btnOKCadastro.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -58,6 +67,13 @@ public class TelaCadastro extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "createUserWithEmail:sucesso");
+                                                if (mNome.getText().toString().isEmpty()) {
+                                                    String mNick = email.getText().toString();
+                                                    int mIndex = mNick.indexOf('@');
+                                                    mNick = mNick.substring(0, mIndex);
+                                                    mNome.setText(mNick);
+
+                                                }
                                                 FirebaseUser user = mAuth.getCurrentUser();
                                                 mProfile = new UserProfileChangeRequest.Builder()
                                                         .setDisplayName(mNome.getText().toString())
@@ -72,9 +88,10 @@ public class TelaCadastro extends AppCompatActivity {
                                                                 }
                                                             }
                                                         });
-                                                updateUI(user);
+                                                criaUsuario(mAuth.getCurrentUser());
+                                                updateUI(mAuth.getCurrentUser());
                                             } else {
-                                                // If sign in fails, display a message to the user.
+                                                // Se houver erro, mostra mensagem ao usuário.
                                                 Log.w(TAG, "createUserWithEmail:falha", task.getException());
                                                 Toast.makeText(TelaCadastro.this, "Não foi possível criar a conta, tente novamente.",
                                                         Toast.LENGTH_SHORT).show();
@@ -87,22 +104,36 @@ public class TelaCadastro extends AppCompatActivity {
                                     });
 
                         } else {
-                            Toast.makeText(TelaCadastro.this, ("Senha e Confirmação devem ser iguais!"), Toast.LENGTH_LONG).show();
+                            pwdC.setError("Senha e Confirmação devem ser iguais!");
+                            pwdC.requestFocus();
+//                            Toast.makeText(TelaCadastro.this, ("Senha e Confirmação devem ser iguais!"), Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        Toast.makeText(TelaCadastro.this, ("Preencha sua Senha!"), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(TelaCadastro.this, ("Preencha sua Senha!"), Toast.LENGTH_LONG).show();
+                        pwd.setFocusable(true);
+                        pwd.requestFocus();
+                        pwd.setError("Preencha sua Senha!");
                     }
 
 
 
                 } else {
-                    Toast.makeText(TelaCadastro.this, ("Preencha seu Email!"), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(TelaCadastro.this, ("Preencha seu Email!"), Toast.LENGTH_LONG).show();
+                    email.requestFocus();
+                    email.setError("Preencha seu Email!");
+
                 }
 
             }
         });
 
 
+        btnVoltar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private void updateUI(FirebaseUser user) {
@@ -113,5 +144,19 @@ public class TelaCadastro extends AppCompatActivity {
             LoginManager.getInstance().logOut();
             startActivity(new Intent( TelaCadastro.this, MainActivity.class));
         }
+    }
+
+    private void criaUsuario(FirebaseUser user) {
+
+        ManageUsuarioFirebaseDB mMUsuario = new ManageUsuarioFirebaseDB();
+        Usuario mUsuario = new Usuario(user.getUid(), mNome.getText().toString(), email.getText().toString());
+
+        if (mMUsuario.makeUsuario(mUsuario)) {
+            Log.i (TAG, "criou usuario");
+
+        } else {
+            Log.e (TAG, "não criou usuario");
+        }
+
     }
 }
