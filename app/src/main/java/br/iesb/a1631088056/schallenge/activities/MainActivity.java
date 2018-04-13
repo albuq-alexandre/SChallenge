@@ -1,6 +1,7 @@
 package br.iesb.a1631088056.schallenge.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 
 import br.iesb.a1631088056.schallenge.R;
+import br.iesb.a1631088056.schallenge.helpers.ManageUsuarioFirebaseDB;
+import br.iesb.a1631088056.schallenge.models.Usuario;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    private Usuario myUsuario;
 
     private static final String TAG = "MainActivity-login";
     private static final int RC_SIGN_IN = 9001;
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 Log.d(TAG, "Erro na foto" + e.getMessage());
                             }
+                            //criaUsuario(user, macct.getPhotoUrl());
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -243,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredentialFB:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            //criaUsuario(user, user.getPhotoUrl());
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -277,6 +283,29 @@ public class MainActivity extends AppCompatActivity {
             LoginManager.getInstance().logOut();
         }
     }
+
+    /*// helper para criar o usuário no FirebaseDatabase
+
+    private void criaUsuario(FirebaseUser user, Uri photoUri) {
+
+        ManageUsuarioFirebaseDB mMUsuario = new ManageUsuarioFirebaseDB();
+        myUsuario = new Usuario(user.getUid(), user.getDisplayName(), user.getEmail());
+
+        if (mMUsuario.makeUsuario(myUsuario)) {
+            Log.i (TAG, "criou usuario");
+            try {
+                mMUsuario.storeAvatar(photoUri, mMUsuario.getUsuarioFromFirebaseUid(user).getKey());
+            } catch (Exception e) {
+                Log.e (TAG, "Não guardou a foto do avatar");
+                Log.e (TAG, e.getMessage());
+            }
+
+        } else {
+            Log.e (TAG, "não criou usuario");
+        }
+
+    }*/
+
 }
 
 

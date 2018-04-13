@@ -106,10 +106,10 @@ public class TelaCadastro extends AppCompatActivity {
                         } else {
                             pwdC.setError("Senha e Confirmação devem ser iguais!");
                             pwdC.requestFocus();
-//                            Toast.makeText(TelaCadastro.this, ("Senha e Confirmação devem ser iguais!"), Toast.LENGTH_LONG).show();
+//
                         }
                     } else {
-//                        Toast.makeText(TelaCadastro.this, ("Preencha sua Senha!"), Toast.LENGTH_LONG).show();
+//
                         pwd.setFocusable(true);
                         pwd.requestFocus();
                         pwd.setError("Preencha sua Senha!");
@@ -118,7 +118,7 @@ public class TelaCadastro extends AppCompatActivity {
 
 
                 } else {
-//                    Toast.makeText(TelaCadastro.this, ("Preencha seu Email!"), Toast.LENGTH_LONG).show();
+//
                     email.requestFocus();
                     email.setError("Preencha seu Email!");
 
@@ -153,6 +153,7 @@ public class TelaCadastro extends AppCompatActivity {
 
         if (mMUsuario.makeUsuario(mUsuario)) {
             Log.i (TAG, "criou usuario");
+            //mMUsuario.storeAvatar(user.getPhotoUrl(), mUsuario.id);
 
         } else {
             Log.e (TAG, "não criou usuario");

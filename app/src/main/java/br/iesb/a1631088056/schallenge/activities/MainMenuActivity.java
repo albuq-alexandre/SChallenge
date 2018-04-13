@@ -30,6 +30,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -40,7 +45,9 @@ import java.io.InputStream;
 
 import br.iesb.a1631088056.schallenge.R;
 import br.iesb.a1631088056.schallenge.fragments.CellBemFragment;
+import br.iesb.a1631088056.schallenge.helpers.ManageUsuarioFirebaseDB;
 import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent;
+import br.iesb.a1631088056.schallenge.models.Usuario;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import br.iesb.a1631088056.schallenge.adapters.FragmentAdapter;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
@@ -56,7 +63,8 @@ public class MainMenuActivity extends AppCompatActivity
     private final int SELECT_PHOTO = 1;
     private static final String TAG = "MainMenuActivity";
     private final int PICK_IMAGE_REQUEST = 71;
-    private StorageReference mStorageRef;
+    private ManageUsuarioFirebaseDB manageUsuarioFirebaseDB;
+    private DataSnapshot dsRefUsuario, myDS;
 
 
     @Override
@@ -76,25 +84,90 @@ public class MainMenuActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        //Firebase Storage
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+        //iniciando helper FirebaseDB
+        manageUsuarioFirebaseDB = new ManageUsuarioFirebaseDB();
+
 
 
 
 
         if (mUser != null ) {
 
+            FirebaseDatabase.getInstance()
+                    .getReference("Usuarios")
+                    .orderByChild("email")
+                    .equalTo(mUser.getEmail())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (ds.child("avatarURL").exists()) {
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setPhotoUri(Uri.parse(ds.child("avatarURL").getValue().toString()))
+                                            .build();
+                                    try {
+                                        mUser.updateProfile(profileUpdates)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            Log.i(TAG, "Foto atualizada");
+                                                        }
+                                                    }
+                                                });
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Erro na foto" + e.getMessage());
+                                    }
 
-            try {
+
+                                } else {
+                                    switch (mUser.getProviderId()) {
+                                        case "Facebook": {
+                                            try {
+                                                manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
+                                            } catch (Exception e) {
+                                                Log.e(TAG, e.getMessage());
+                                            }
+                                        }
+                                        case "Google": {
+                                            try {
+                                                manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
+                                            } catch (Exception e) {
+                                                Log.e(TAG, e.getMessage());
+                                            }
+                                        }
+                                        case "firebase": {
+                                            try {
+                                                manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
+                                            } catch (Exception e) {
+                                                Log.e(TAG, e.getMessage());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+                try {
                 mUserEmail.setText(mUser.getEmail());
                 mUserName.setText(mUser.getDisplayName());
                 Picasso.with(this.getApplicationContext())
                         .load(mUser.getPhotoUrl().toString())
                         .transform(new CropCircleTransformation())
                         .into(mUserAvatar);
+
             } catch (Exception e) {
                 Log.e(TAG, mUser.getEmail());
                 Log.e(TAG, "erro AccountHeather: " + e.getMessage());
+                mUserEmail.setText(mUser.getEmail());
+                mUserName.setText(mUser.getDisplayName());
             }
         }
 
@@ -218,11 +291,6 @@ public class MainMenuActivity extends AppCompatActivity
                 if(resultCode == RESULT_OK){
                     try {
                         final Uri imageUri = imageReturnedIntent.getData();
-                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-
-
-                        // TODO: LOAD NO FIREBASE STORAGE
                         FirebaseUser user = mAuth.getCurrentUser();
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                 .setPhotoUri(imageUri)
@@ -233,12 +301,22 @@ public class MainMenuActivity extends AppCompatActivity
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                Log.d(TAG, "Foto atualizada");
+                                                Log.i(TAG, "Foto atualizada");
+
+                                                try {
+                                                    DataSnapshot usuario = manageUsuarioFirebaseDB.getUsuarioFromFirebaseUid(mUser);
+                                                    manageUsuarioFirebaseDB.storeAvatar(imageUri, usuario.getKey());
+                                                    //manageUsuarioFirebaseDB.updateUsuario( usuario, "avatarURL", path);
+
+                                                } catch (Exception e) {
+                                                    Log.e(TAG, "Erro ao gravar a foto no storage");
+                                                    Log.e(TAG, e.getMessage());
+                                                }
                                             }
                                         }
                                     });
                         } catch (Exception e) {
-                            Log.d(TAG, "Erro na foto" + e.getMessage());
+                            Log.e(TAG, "Erro na foto" + e.getMessage());
                         }
 
 
@@ -251,7 +329,7 @@ public class MainMenuActivity extends AppCompatActivity
 
 
 
-                    } catch (FileNotFoundException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 

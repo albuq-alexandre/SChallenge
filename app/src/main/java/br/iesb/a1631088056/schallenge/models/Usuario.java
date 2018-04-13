@@ -6,7 +6,6 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class Usuario {
 
 
-
     public String firebaseUid, id, nome, email, avatarURL;
 //    public Map <String, Object> inventariadas;
 
@@ -72,8 +71,6 @@ public class Usuario {
     }
     */
 
-    @Override
-    public String toString() {
-        return this.getFirebaseUid();
-    }
+
+
 }
