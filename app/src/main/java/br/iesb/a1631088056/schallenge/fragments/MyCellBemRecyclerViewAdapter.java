@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,7 +42,7 @@ public class MyCellBemRecyclerViewAdapter extends RecyclerView.Adapter<MyCellBem
         holder.mCodBemView.setText(mValues.get(position).mCodBem);
         holder.mPBMSView.setText(mValues.get(position).mPBMS);
         holder.mNomeBemView.setText(mValues.get(position).mNomeBem);
-        holder.mAcessoryCellBem.setImageResource(android.R.drawable.checkbox_on_background);
+        holder.mAcessoryCellBem.setChecked(true);
 
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +68,7 @@ public class MyCellBemRecyclerViewAdapter extends RecyclerView.Adapter<MyCellBem
         public final TextView mPBMSView;
         public final TextView mNomeBemView;
         public final ImageView mCategoryBem;
-        public final ImageView mAcessoryCellBem;
+        public final CheckBox mAcessoryCellBem;
         public DummyItem mItem;
 
         public ViewHolder(View view) {
@@ -77,7 +78,7 @@ public class MyCellBemRecyclerViewAdapter extends RecyclerView.Adapter<MyCellBem
             mPBMSView = (TextView) view.findViewById(R.id.txtViewPBMS);
             mNomeBemView = (TextView) view.findViewById(R.id.txtViewNomeBem);
             mCategoryBem = (ImageView) view.findViewById(R.id.imgViewCategoryBem);
-            mAcessoryCellBem = (ImageView) view.findViewById(R.id.imgViewAccessoryIcon);
+            mAcessoryCellBem = (CheckBox) view.findViewById(R.id.check_inventariado);
 
 
         }

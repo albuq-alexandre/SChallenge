@@ -38,6 +38,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import br.iesb.a1631088056.schallenge.R;
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private Usuario myUsuario;
+    private boolean criauser = false;
 
     private static final String TAG = "MainActivity-login";
     private static final int RC_SIGN_IN = 9001;
@@ -68,103 +74,99 @@ public class MainActivity extends AppCompatActivity {
         btnCadastro = (Button) findViewById(R.id.buttonCadastro);
 
 
-
         // Configura Firebase
-                mAuth = FirebaseAuth.getInstance();
-                txtEmail = (EditText) findViewById(R.id.txtEmail);
-                txtPasswd = (EditText) findViewById(R.id.txtPasswd);
-
+        mAuth = FirebaseAuth.getInstance();
+        txtEmail = (EditText) findViewById(R.id.txtEmail);
+        txtPasswd = (EditText) findViewById(R.id.txtPasswd);
 
 
         // Configura Google Sign In
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-                mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-                btnGmailLogin = (SignInButton) findViewById(R.id.gmail_sign_in_button);
+        btnGmailLogin = (SignInButton) findViewById(R.id.gmail_sign_in_button);
 
-                btnGmailLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
-                    }
-                });
+        btnGmailLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
+            }
+        });
 
 
         // Config para FB
-                callbackManagerFB = CallbackManager.Factory.create();
-                loginButton = (LoginButton) findViewById(R.id.login_button);
-                loginButton.setReadPermissions("email", "public_profile");
+        callbackManagerFB = CallbackManager.Factory.create();
+        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("email", "public_profile");
 
-                // Callback registration
-                loginButton.registerCallback(callbackManagerFB, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                        Toast.makeText(MainActivity.this, "Facebook id" + loginResult.getAccessToken().getUserId(), Toast.LENGTH_LONG).show();
-                        handleFacebookAccessToken(loginResult.getAccessToken());
-                        updateUI(mAuth.getCurrentUser());
-                       // startActivity(new Intent( MainActivity.this, MainMenuActivity.class));
-                    }
+        // Callback registration
+        loginButton.registerCallback(callbackManagerFB, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                Toast.makeText(MainActivity.this, "Facebook id" + loginResult.getAccessToken().getUserId(), Toast.LENGTH_LONG).show();
+                handleFacebookAccessToken(loginResult.getAccessToken());
+                updateUI(mAuth.getCurrentUser());
+                // startActivity(new Intent( MainActivity.this, MainMenuActivity.class));
+            }
 
-                    @Override
-                    public void onCancel() {
-                        Log.d(TAG, "facebook:onCancel");
-                        Toast.makeText(MainActivity.this, "Vc cancelou o login FB...", Toast.LENGTH_LONG).show();
-                    }
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+                Toast.makeText(MainActivity.this, "Vc cancelou o login FB...", Toast.LENGTH_LONG).show();
+            }
 
-                    @Override
-                    public void onError(FacebookException exception) {
-                        Log.d(TAG, "facebook:onError", exception);
-                        Toast.makeText(MainActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+            @Override
+            public void onError(FacebookException exception) {
+                Log.d(TAG, "facebook:onError", exception);
+                Toast.makeText(MainActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
         // Cadastro no Firebase - email e senha
 
 
-
-                btnCadastro.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        startActivity(new Intent( MainActivity.this, TelaCadastro.class));
-                    }
-                });
+        btnCadastro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, TelaCadastro.class));
+            }
+        });
 
 
         // Login Firebase email e senha
 
 
+        btnOK.setOnClickListener(new View.OnClickListener() {
 
-                btnOK.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
 
-                    @Override
-                    public void onClick(View v) {
+                //startActivity(new Intent( MainActivity.this, MainMenuActivity.class));
 
-                        //startActivity(new Intent( MainActivity.this, MainMenuActivity.class));
+                mAuth.signInWithEmailAndPassword(txtEmail.getText().toString(), txtPasswd.getText().toString())
+                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, task.getException().getMessage());
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Logado", Toast.LENGTH_LONG).show();
+                                    FirebaseUser user = task.getResult().getUser();
 
-                       mAuth.signInWithEmailAndPassword(txtEmail.getText().toString(), txtPasswd.getText().toString())
-                                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (!task.isSuccessful()) {
-                                            Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                            Log.d(TAG, task.getException().getMessage());
-                                        } else {
-                                            Toast.makeText(MainActivity.this, "Logado", Toast.LENGTH_LONG).show();
-                                            FirebaseUser user = task.getResult().getUser();
-
-                                            if (user != null) {
-                                                startActivity(new Intent( MainActivity.this, MainMenuActivity.class));
-                                            }
-                                        }
+                                    if (user != null) {
+                                        startActivity(new Intent(MainActivity.this, MainMenuActivity.class));
                                     }
-                                });
-                    }
-                });
+                                }
+                            }
+                        });
+            }
+        });
     }
 
     @Override
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 Log.d(TAG, "Erro na foto" + e.getMessage());
                             }
-                            //criaUsuario(user, macct.getPhotoUrl());
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -248,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredentialFB:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //criaUsuario(user, user.getPhotoUrl());
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -269,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
         // Verificando se existe conta já logada
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-       updateUI(currentUser);
+        updateUI(currentUser);
     }
 
     //helper para redirecionamento/isolamento da área segura
@@ -277,35 +278,39 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
 
         if (user != null) {
-            startActivity(new Intent( MainActivity.this, MainMenuActivity.class));
+            startActivity(new Intent(MainActivity.this, MainMenuActivity.class));
         } else {
             findViewById(R.id.gmail_sign_in_button).setVisibility(View.VISIBLE);
             LoginManager.getInstance().logOut();
         }
     }
 
-    /*// helper para criar o usuário no FirebaseDatabase
+    // helper para criar o usuário no FirebaseDatabase
 
     private void criaUsuario(FirebaseUser user, Uri photoUri) {
 
         ManageUsuarioFirebaseDB mMUsuario = new ManageUsuarioFirebaseDB();
-        myUsuario = new Usuario(user.getUid(), user.getDisplayName(), user.getEmail());
 
-        if (mMUsuario.makeUsuario(myUsuario)) {
-            Log.i (TAG, "criou usuario");
-            try {
-                mMUsuario.storeAvatar(photoUri, mMUsuario.getUsuarioFromFirebaseUid(user).getKey());
-            } catch (Exception e) {
-                Log.e (TAG, "Não guardou a foto do avatar");
-                Log.e (TAG, e.getMessage());
+            myUsuario = new Usuario(user.getUid(), user.getDisplayName(), user.getEmail());
+
+            if (mMUsuario.makeUsuario(myUsuario)) {
+                Log.i(TAG, "criou usuario");
+                try {
+                    mMUsuario.storeAvatar(photoUri, mMUsuario.getUsuarioFromFirebaseUid(user).getKey());
+                } catch (Exception e) {
+                    Log.e(TAG, "Não guardou a foto do avatar");
+                    Log.e(TAG, e.getMessage());
+                }
+
+            } else {
+                Log.e(TAG, "não criou usuario");
             }
-
-        } else {
-            Log.e (TAG, "não criou usuario");
-        }
-
-    }*/
+    }
 
 }
+
+
+
+
 
 

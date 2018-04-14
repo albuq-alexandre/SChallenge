@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,26 +42,7 @@ public class ManageUsuarioFirebaseDB {
         mStorage = FirebaseStorage.getInstance();
         mStorageRef = mStorage.getReference("usersAvatar");
 
-        /*myRefUsuario.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    mReturnedUsuario = ds;
-                    Log.d(TAG, "Usuário gerenciado é: " + ds.getKey());
-                }
 
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Falha ao ler o valor no BD.", databaseError.toException());
-
-            }
-        });
-*/
     }
 
 
@@ -86,41 +69,46 @@ public class ManageUsuarioFirebaseDB {
     }
 
 
-    public void storeAvatar(Uri uri, String myid) throws Exception{
+    public void storeAvatar(Uri uri, String myid) {
 
         final String mId = myid;
 
 
-        if (!uri.toString().isEmpty()){
+        if (!uri.toString().isEmpty()) {
             mStorageRef.child(myid)
                     .putFile(uri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Log.i(TAG, "Upload da imagem completo.");
-                            Log.i(TAG, mStorageRef.child(mId).getDownloadUrl().toString());
-
-                            try {
-                                if (!TextUtils.isEmpty(myRefUsuario.child("avatarURL").getKey())) {
-                                    myRefUsuario.child(mId).child("avatarURL").setValue(mStorageRef.child(mId).getDownloadUrl().getResult().toString());
-                                }
-                            } catch (Exception e) {
-                                Log.e (TAG, e.getMessage());
-                            }
-                        }
-                    })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+
                             Log.e(TAG, e.getMessage());
                         }
-                    });
+                    })
+                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                               @Override
+                                               public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                   try {
+                                                       if (!TextUtils.isEmpty(myRefUsuario.child("avatarURL").getKey())) {
+                                                           mStorageRef.child(mId).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                               @Override
+                                                               public void onComplete(@NonNull Task<Uri> task) {
+                                                                   myRefUsuario.child(mId).child("avatarURL").setValue(task.getResult().toString());
+                                                                   Log.i(TAG, task.getResult().toString());
+                                                               }
+                                                           });
 
-            return;
-        } else {
-            throw new Exception("Imagem com Url inválida!");
+                                                       }
+
+                                                   } catch (Exception e) {
+
+                                                       Log.e(TAG, e.getMessage());
+                                                   }
+                                               }
+                                           }
+
+                    );
         }
-
+        return;
     }
 
     public DataSnapshot getUsuarioFromFirebaseUid(FirebaseUser user) {

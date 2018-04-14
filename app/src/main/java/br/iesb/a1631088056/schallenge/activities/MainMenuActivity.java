@@ -1,6 +1,7 @@
 package br.iesb.a1631088056.schallenge.activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -43,6 +46,7 @@ import com.squareup.picasso.Picasso;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import br.iesb.a1631088056.schallenge.Manifest;
 import br.iesb.a1631088056.schallenge.R;
 import br.iesb.a1631088056.schallenge.fragments.CellBemFragment;
 import br.iesb.a1631088056.schallenge.helpers.ManageUsuarioFirebaseDB;
@@ -61,6 +65,7 @@ public class MainMenuActivity extends AppCompatActivity
     TextView mUserName, mUserEmail;
     NavigationView mNavigationView;
     private final int SELECT_PHOTO = 1;
+    private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final String TAG = "MainMenuActivity";
     private final int PICK_IMAGE_REQUEST = 71;
     private ManageUsuarioFirebaseDB manageUsuarioFirebaseDB;
@@ -121,26 +126,53 @@ public class MainMenuActivity extends AppCompatActivity
 
 
                                 } else {
+                                    if (ContextCompat.checkSelfPermission(MainMenuActivity.this,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                                            != PackageManager.PERMISSION_GRANTED) {
+
+                                        // Should we show an explanation?
+                                        if (ActivityCompat.shouldShowRequestPermissionRationale(MainMenuActivity.this,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                                            // Show an expanation to the user *asynchronously* -- don't block
+                                            // this thread waiting for the user's response! After the user
+                                            // sees the explanation, try again to request the permission.
+
+                                        } else {
+
+                                            // No explanation needed, we can request the permission.
+
+                                            ActivityCompat.requestPermissions(MainMenuActivity.this,
+                                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+                                            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                                            // app-defined int constant. The callback method gets the
+                                            // result of the request.
+                                        }
+                                    }
+
                                     switch (mUser.getProviderId()) {
                                         case "Facebook": {
                                             try {
                                                 manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
                                             } catch (Exception e) {
-                                                Log.e(TAG, e.getMessage());
+
+                                                Log.e(TAG, "linha 130" + e.getMessage());
                                             }
                                         }
                                         case "Google": {
                                             try {
                                                 manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
                                             } catch (Exception e) {
-                                                Log.e(TAG, e.getMessage());
+                                                Log.e(TAG, "linha 137" + e.getMessage());
                                             }
                                         }
                                         case "firebase": {
                                             try {
                                                 manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
                                             } catch (Exception e) {
-                                                Log.e(TAG, e.getMessage());
+                                                Log.e(TAG, "linha 144" + e.getMessage());
                                             }
                                         }
                                     }
@@ -205,7 +237,8 @@ public class MainMenuActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mUserAvatar.setOnClickListener(new View.OnClickListener() {
+        mUserAvatar.setOnClickListener(
+                new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /*Intent iAvatarPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -217,6 +250,14 @@ public class MainMenuActivity extends AppCompatActivity
                 startActivityForResult(Intent.createChooser(intent, "Escolha a Imagem"), PICK_IMAGE_REQUEST);
             }
         });
+
+        mUserEmail.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view) {
+                                              startActivity(new Intent(MainMenuActivity.this, PerfilUsuario.class));
+                                          }
+                                      }
+        );
 
     }
 
@@ -336,4 +377,34 @@ public class MainMenuActivity extends AppCompatActivity
                 }
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+
+
 }
+
+
