@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ public class DummyContent {
     }
 
     private static DummyItem createDummyItem(Bem bem) {
-        return new DummyItem(bem.getId(), bem.getPbms(), bem.getNomePbms(), bem.getCategoria());
+        return new DummyItem(bem.getId(), bem.getPbms(), bem.getNomePbms(), bem.getCategoria(), bem.getInventariado());
     }
 
 
@@ -104,17 +105,19 @@ public class DummyContent {
     /**
      * A dummy item representing a piece of content.
      */
-    public static class DummyItem {
+    public static class DummyItem  implements Serializable {
         public final String mCodBem;
         public final String mPBMS;
         public final String mNomeBem;
         public final int mCategoryBem;
+        public final boolean mStatus;
 
-        public DummyItem(String id, String pPBMS, String pNomeBem, int mCategoryBem) {
+        public DummyItem(String id, String pPBMS, String pNomeBem, int mCategoryBem, boolean pStatus) {
             this.mCodBem = id;
             this.mPBMS = pPBMS;
             this.mNomeBem = pNomeBem;
             this.mCategoryBem = mCategoryBem;
+            this.mStatus = pStatus;
         }
 
         @Override

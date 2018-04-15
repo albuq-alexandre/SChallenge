@@ -1,8 +1,13 @@
 package br.iesb.a1631088056.schallenge.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.io.Serializable;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -13,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "pbms"
 })
 
-public class Bem {
+public class Bem implements Serializable {
     @JsonProperty("categoria")
     private Integer categoria;
     @JsonProperty("id")
@@ -98,5 +103,6 @@ public class Bem {
     public void setPbms(String pbms) {
         this.pbms = pbms;
     }
+
 
 }

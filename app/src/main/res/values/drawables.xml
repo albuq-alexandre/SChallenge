@@ -5,4 +5,7 @@
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
+    <item name="ic_devices" type="drawable">@drawable/ic_devices_other_black_24dp</item>
+    <item name="ic_palette" type="drawable">@drawable/ic_palette_black_24dp</item>
+    <item name="ic_domain" type="drawable">@drawable/ic_domain_black_24dp</item>
 </resources>

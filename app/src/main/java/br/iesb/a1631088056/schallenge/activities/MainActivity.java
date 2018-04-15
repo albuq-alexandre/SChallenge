@@ -1,9 +1,16 @@
 package br.iesb.a1631088056.schallenge.activities;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -47,6 +54,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import br.iesb.a1631088056.schallenge.R;
 import br.iesb.a1631088056.schallenge.helpers.ManageUsuarioFirebaseDB;
 import br.iesb.a1631088056.schallenge.models.Usuario;
@@ -66,16 +79,59 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity-login";
     private static final int RC_SIGN_IN = 9001;
-
+    private static final int REQUEST_PERMISSION_SETTING = 101;
+    private boolean sentToSettings = false;
+    private SharedPreferences permissionStatus;
+    private Map<String,Boolean> permRequired;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //Elementos de Tela
         btnOK = (Button) findViewById(R.id.buttonOK);
         btnCadastro = (Button) findViewById(R.id.buttonCadastro);
         esqueciSenha = (TextView) findViewById(R.id.txtEsqueciSenha);
+
+        // Permissões
+        permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
+
+        permRequired = new HashMap<String, Boolean>();
+
+        permRequired.put(Manifest.permission.CAMERA,false);
+        permRequired.put(Manifest.permission.ACCESS_COARSE_LOCATION,false);
+        permRequired.put(Manifest.permission.ACCESS_FINE_LOCATION,false);
+        permRequired.put(Manifest.permission.WRITE_EXTERNAL_STORAGE,false);
+        permRequired.put(Manifest.permission.READ_EXTERNAL_STORAGE,false);
+        permRequired.put(Manifest.permission.INTERNET,false);
+            //Checa se existem as permissões necessárias para o app
+
+
+        Iterator<Map.Entry<String,Boolean>> it = permRequired.entrySet().iterator();
+        while (it.hasNext()) {
+
+            Map.Entry<String,Boolean> permissao = it.next();
+
+
+            if (ActivityCompat.checkSelfPermission(MainActivity.this,permissao.getKey())!= PackageManager.PERMISSION_GRANTED){
+                Log.i (TAG, "Pedir permissão para "+ permissao.getKey());
+                sentToSettings = true;
+            } else {
+                Log.i (TAG, "Permissão concedida para "+ permissao.getKey());
+                permRequired.put(permissao.getKey(),true);
+            }
+        }
+
+
+
+
+        if (sentToSettings){
+                sentToSettings = false;
+                requererpermissao();
+            }
+
 
         // Configura Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -222,6 +278,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if (requestCode == REQUEST_PERMISSION_SETTING) {
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                //Got Permission
+                proceedAfterPermission();
+            }
+        }
+
     }
 
     // Helper para Autenticar com google
@@ -339,6 +402,71 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
+    private void requererpermissao() {
+
+
+                //Show Information about why you need the permission
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Permissões Múltiplas são nessessárias");
+                builder.setMessage("Esse app precissa de permissão para Câmera, Localização e Gravação de Conteúdo");
+                builder.setPositiveButton("Conceder", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Iterator<Map.Entry<String,Boolean>> it = permRequired.entrySet().iterator();
+
+                        while (it.hasNext()) {
+
+                            Map.Entry<String,Boolean> permissao = it.next();
+
+                            if (permissao.getValue()) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permissao.getKey()}, REQUEST_PERMISSION_SETTING);
+                                Log.e (TAG, "Permissão concedida para "+ permissao.getKey());
+                            }
+                        }
+                        dialog.cancel();
+
+                    }
+                });
+                builder.setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.e (TAG, "Permissão Não concedida");
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+
+
+
+
+
+
+
+
+    }
+
+    /*@Override
+    void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+
+
+        switch (requestCode) {
+            case REQUEST_PERMISSION_SETTING :
+            if (grantResults.length > 0) {
+                permissionStatus.edit();
+                permissionStatus.putBoolean(permissions[0],true);
+                permissionStatus.commit();
+            }
+
+        }
+
+    }*/
+
+    protected void proceedAfterPermission() {
+        //We've got the permission, now we can proceed further
+        Toast.makeText(getBaseContext(), "Permissão Concedida", Toast.LENGTH_LONG).show();
+    }
 }
 
 

@@ -248,9 +248,7 @@ public class MainMenuActivity extends AppCompatActivity
                 new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Intent iAvatarPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                iAvatarPickerIntent.setType("image/*");
-                startActivityForResult(iAvatarPickerIntent., SELECT_PHOTO);*/
+
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -327,6 +325,11 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+        Intent intent = new Intent(getApplicationContext(), TelaBem.class);
+        intent.putExtra("Bem", item);
+        startActivity(intent);
+
 
     }
 
