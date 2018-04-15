@@ -32,15 +32,31 @@
             app:civ_border_color="#FFFFFF"
             app:civ_border_width="3dp" />
 
-        <TextView
-            android:id="@+id/tVUsuarioEmail"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:layout_marginTop="12dp"
-            android:gravity="center_horizontal"
-            android:text="Email"
-            android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tVUsuarioEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="15"
+                android:gravity="center_horizontal|center"
+                android:text="Email"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
+
+            <ImageView
+                android:id="@+id/imgEmailVerified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_horizontal"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/ic_launcher_round" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/usuarioNometv"
@@ -66,7 +82,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="phone" />
+            android:inputType="phone"
+            android:phoneNumber="true" />
 
         <TextView
             android:id="@+id/tVCidade"
@@ -83,22 +100,43 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="152dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnOkUsuarioSalvar"
-                android:layout_width="101dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.02"
+                android:layout_weight="0.5"
                 android:text="Salvar" />
 
             <Button
                 android:id="@+id/btnUsuarioVoltar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.03"
+                android:layout_weight="0.5"
                 android:text="Voltar" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSendVerifyEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Resend verificação Email" />
+
+            <Button
+                android:id="@+id/btnRedefSenha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Altera Senha" />
         </LinearLayout>
 
     </LinearLayout>

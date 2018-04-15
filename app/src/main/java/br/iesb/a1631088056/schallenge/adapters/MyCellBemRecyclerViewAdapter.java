@@ -1,4 +1,4 @@
-package br.iesb.a1631088056.schallenge.fragments;
+package br.iesb.a1631088056.schallenge.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

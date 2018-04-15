@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 
@@ -70,6 +73,9 @@ public class MainMenuActivity extends AppCompatActivity
     private final int PICK_IMAGE_REQUEST = 71;
     private ManageUsuarioFirebaseDB manageUsuarioFirebaseDB;
     private DataSnapshot dsRefUsuario, myDS;
+    private FirebaseStorage mStorage;
+    private StorageReference mStorageRef;
+    private FirebaseDatabase mDatabase;
 
 
     @Override
@@ -83,7 +89,8 @@ public class MainMenuActivity extends AppCompatActivity
         mUserAvatar = header.findViewById(R.id.userAvatar);
         mUserName = header.findViewById(R.id.userFullName);
         mUserEmail = header.findViewById(R.id.userEmail);
-
+        mStorage = FirebaseStorage.getInstance();
+        mStorageRef = mStorage.getReference("usersAvatar");
 
         //Resgatando informações do Usuário Logado;
         mAuth = FirebaseAuth.getInstance();
@@ -155,7 +162,7 @@ public class MainMenuActivity extends AppCompatActivity
                                     switch (mUser.getProviderId()) {
                                         case "Facebook": {
                                             try {
-                                                manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
+                                    //            mmstoreAvatar(mUser.getPhotoUrl(), ds.getKey());
                                             } catch (Exception e) {
 
                                                 Log.e(TAG, "linha 130" + e.getMessage());
@@ -163,14 +170,14 @@ public class MainMenuActivity extends AppCompatActivity
                                         }
                                         case "Google": {
                                             try {
-                                                manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
+                                  //              mmstoreAvatar(mUser.getPhotoUrl(), ds.getKey());
                                             } catch (Exception e) {
                                                 Log.e(TAG, "linha 137" + e.getMessage());
                                             }
                                         }
                                         case "firebase": {
                                             try {
-                                                manageUsuarioFirebaseDB.storeAvatar(mUser.getPhotoUrl(), ds.getKey());
+                                //                mmstoreAvatar(mUser.getPhotoUrl(), ds.getKey());
                                             } catch (Exception e) {
                                                 Log.e(TAG, "linha 144" + e.getMessage());
                                             }
@@ -346,7 +353,7 @@ public class MainMenuActivity extends AppCompatActivity
 
                                                 try {
                                                     DataSnapshot usuario = manageUsuarioFirebaseDB.getUsuarioFromFirebaseUid(mUser);
-                                                    manageUsuarioFirebaseDB.storeAvatar(imageUri, usuario.getKey());
+                                                    mmstoreAvatar(imageUri, usuario.getKey());
                                                     //manageUsuarioFirebaseDB.updateUsuario( usuario, "avatarURL", path);
 
                                                 } catch (Exception e) {
@@ -402,6 +409,56 @@ public class MainMenuActivity extends AppCompatActivity
             // permissions this app might request
         }
     }
+
+
+    public void mmstoreAvatar(Uri uri, String myid) {
+
+        final String mId = myid;
+
+
+        if (!uri.toString().isEmpty()) {
+            mStorageRef.child(myid)
+                    .putFile(uri)
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            Log.e(TAG, e.getMessage());
+                        }
+                    })
+                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                               @Override
+                                               public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                   try {
+                                                       if (!TextUtils.isEmpty(dsRefUsuario.child("avatarURL").getKey())) {
+                                                           mStorageRef.child(mId).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                               @Override
+                                                               public void onComplete(@NonNull Task<Uri> task) {
+                                                                   FirebaseDatabase
+                                                                           .getInstance()
+                                                                           .getReference("Usuarios")
+                                                                           .child(mId).child("avatarURL")
+                                                                           .setValue(task.getResult().toString());
+                                                                   Log.i(TAG, task.getResult().toString());
+                                                               }
+                                                           });
+
+                                                       }
+
+                                                   } catch (Exception e) {
+
+                                                       Log.e(TAG, e.getMessage());
+                                                   }
+                                               }
+                                           }
+
+                    );
+        }
+        return;
+    }
+
+
+
 
 
 

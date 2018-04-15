@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import br.iesb.a1631088056.schallenge.R;
+import br.iesb.a1631088056.schallenge.adapters.MyCellBemRecyclerViewAdapter;
 import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent;
 import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent.DummyItem;
 

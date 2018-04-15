@@ -6,10 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnOK, btnCadastro;
     SignInButton btnGmailLogin;
     EditText txtPasswd, txtEmail;
+    TextView esqueciSenha;
     private CallbackManager callbackManagerFB;
     private LoginButton loginButton;
     private GoogleSignInClient mGoogleSignInClient;
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnOK = (Button) findViewById(R.id.buttonOK);
         btnCadastro = (Button) findViewById(R.id.buttonCadastro);
-
+        esqueciSenha = (TextView) findViewById(R.id.txtEsqueciSenha);
 
         // Configura Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -167,6 +170,35 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         });
+
+        esqueciSenha.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+
+                   if (TextUtils.isEmpty(txtEmail.getText())) {
+                       txtEmail.setError("Informe seu Email");
+                       txtEmail.requestFocus();
+                   } else {
+
+                       try {
+                           mAuth.sendPasswordResetEmail(txtEmail.getText().toString())
+                                   .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                       @Override
+                                       public void onComplete(@NonNull Task<Void> task) {
+                                           Snackbar.make(view, "Email enviado. Veja sua Caixa Postal...", Snackbar.LENGTH_LONG)
+                                                   .setAction("Action", null).show();
+                                       }
+                                   });
+                       } catch (Exception e) {
+                           Log.e (TAG, "Falha ao enviar email restart da senha");
+                           Log.e (TAG, e.getMessage());
+                           Snackbar.make(view, "Falha ao enviar o Email. Verifique ou Faça Cadastro.", Snackbar.LENGTH_LONG)
+                                   .setAction("Action", null).show();
+                       }
+                   }
+               }
+           });
+
     }
 
     @Override
