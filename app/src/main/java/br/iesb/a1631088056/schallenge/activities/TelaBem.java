@@ -1,5 +1,7 @@
 package br.iesb.a1631088056.schallenge.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,25 +10,29 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.SupportMapFragment;
+
+import java.util.Calendar;
 
 import br.iesb.a1631088056.schallenge.Manifest;
 import br.iesb.a1631088056.schallenge.R;
+import br.iesb.a1631088056.schallenge.helpers.AlarmeUtil;
+import br.iesb.a1631088056.schallenge.helpers.Receiver;
 import br.iesb.a1631088056.schallenge.helpers.dummy.DummyContent;
-import br.iesb.a1631088056.schallenge.models.Bem;
 
 public class TelaBem extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -37,7 +43,7 @@ public class TelaBem extends AppCompatActivity implements OnMapReadyCallback {
     private static final long INTERVAL = 1000 * 60 * 1; //1 minute
     private static final long FASTEST_INTERVAL = 1000 * 60 * 1; // 1 minute
     public static final int MAP_PERMISSION_ACCESS_COURSE_LOCATION = 9999;
-    Button btnVoltar;
+    Button btnVoltar, btnAgendar;
     TextView tvLocation;
 
     private GoogleMap mMap;
@@ -52,6 +58,13 @@ public class TelaBem extends AppCompatActivity implements OnMapReadyCallback {
         Intent intent = getIntent();
         DummyContent.DummyItem bem = (DummyContent.DummyItem) intent.getSerializableExtra("Bem");
 
+        tvNRBem =  (TextView) findViewById(R.id.tVNRBem);
+        tVDescricaoBem = (TextView) findViewById(R.id.tVDescricaoBem);
+        tvPBMSBem = (TextView) findViewById(R.id.tvBemPBMS);
+        tvStatusBem = (TextView) findViewById(R.id.tvStatusBem);
+        imgCategoria = (ImageView) findViewById(R.id.imgCategoria);
+        //mMap = (GoogleMap) findViewById(R.id.myMap);
+
         tvNRBem.setText(bem.mCodBem);
         tVDescricaoBem.setText(bem.mNomeBem);
         tvPBMSBem.setText(bem.mPBMS);
@@ -65,28 +78,50 @@ public class TelaBem extends AppCompatActivity implements OnMapReadyCallback {
         }
 
         switch (bem.mCategoryBem) {
-            case 1 : {
-                imgCategoria.setImageResource(R.drawable.ic_palette);
-            }
-            case 2 : {
-                imgCategoria.setImageResource(R.drawable.ic_devices);
-            }
             case 3 : {
                 imgCategoria.setImageResource(R.drawable.ic_domain);
+                break;
+            }
+            case 2 : {
+                imgCategoria.setImageResource(R.drawable.ic_palette);
+                break;
+            }
+            case 1 : {
+                imgCategoria.setImageResource(R.drawable.ic_devices);
+                break;
             }
 
 
         }
 
+        btnVoltar = findViewById(R.id.btnBemVoltar);
+        btnAgendar = findViewById(R.id.btnBemAgendar);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        } else {
-            // Show rationale and request permission.
-        }
 
-        SuportMapFragment mapFragment = (SuportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        btnVoltar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        btnAgendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Receiver.ACTION);
+                intent.putExtra("Bem", bem);
+                // Agenda para daqui a 5 seg
+                AlarmeUtil.schedule(TelaBem.this, intent, getTime());
+                //sendBroadcast(intent);
+                Toast.makeText(TelaBem.this,"Alarme agendado.",Toast.LENGTH_SHORT).show();
+
+
+
+            }
+        });
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.myMap);
         mapFragment.getMapAsync(this);
 
     }
@@ -115,9 +150,11 @@ public class TelaBem extends AppCompatActivity implements OnMapReadyCallback {
     private void getLastLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(me).title("Inventariado aqui));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+            if (! (lastKnownLocation==null)) {
+                LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(me).title("Inventariado aqui"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+            }
         }
     }
 
@@ -158,4 +195,14 @@ public class TelaBem extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+
+
+    // Data/Tempo para agendar o alarme
+    public long getTime() {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(System.currentTimeMillis());
+        c.add(Calendar.SECOND, 5);
+        long time = c.getTimeInMillis();
+        return time;
+    }
 }

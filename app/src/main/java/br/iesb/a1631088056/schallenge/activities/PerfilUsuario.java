@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,7 +36,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PerfilUsuario extends AppCompatActivity {
 
     private CircleImageView imgUsuarioAvatar;
-    private ImageView imgEmailVerified;
+    private CheckBox imgEmailVerified;
     private EditText etxtTelefone, etxtNome, etxtCidade;
     private TextView tvEmail;
     private Button  btnSalvar, btnVoltar, btnVerifyEmail, btnRedefSenha;
@@ -74,14 +75,14 @@ public class PerfilUsuario extends AppCompatActivity {
         btnVoltar = (Button) findViewById(R.id.btnUsuarioVoltar);
         btnVerifyEmail = (Button) findViewById(R.id.btnSendVerifyEmail);
         btnRedefSenha = (Button) findViewById(R.id.btnRedefSenha);
-        imgEmailVerified = (ImageView) findViewById(R.id.imgEmailVerified);
+        imgEmailVerified = (CheckBox) findViewById(R.id.imgEmailVerified);
 
         etxtNome.setText(mUser.getDisplayName());
         tvEmail.setText(mUser.getEmail());
         if (mUser.isEmailVerified()) {
-            imgEmailVerified.setVisibility(View.GONE);
+            imgEmailVerified.setChecked(true);
         } else {
-            imgEmailVerified.setVisibility(View.VISIBLE);
+            imgEmailVerified.setChecked(false);
         }
 
 

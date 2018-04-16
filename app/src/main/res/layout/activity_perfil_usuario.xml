@@ -41,7 +41,7 @@
             <TextView
                 android:id="@+id/tVUsuarioEmail"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="12dp"
                 android:layout_marginTop="12dp"
                 android:layout_weight="15"
@@ -49,13 +49,13 @@
                 android:text="Email"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
 
-            <ImageView
+            <CheckBox
                 android:id="@+id/imgEmailVerified"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center_horizontal"
+                android:layout_height="match_parent"
+                android:layout_gravity="top|center_vertical"
                 android:layout_weight="1"
-                app:srcCompat="@mipmap/ic_launcher_round" />
+                android:text="Verificado" />
         </LinearLayout>
 
         <TextView
@@ -106,14 +106,14 @@
             <Button
                 android:id="@+id/btnOkUsuarioSalvar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:text="Salvar" />
 
             <Button
                 android:id="@+id/btnUsuarioVoltar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:text="Voltar" />
 
@@ -127,14 +127,14 @@
             <Button
                 android:id="@+id/btnSendVerifyEmail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:text="Resend verificação Email" />
 
             <Button
                 android:id="@+id/btnRedefSenha"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:text="Altera Senha" />
         </LinearLayout>

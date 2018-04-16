@@ -42,8 +42,22 @@ public class MyCellBemRecyclerViewAdapter extends RecyclerView.Adapter<MyCellBem
         holder.mCodBemView.setText(mValues.get(position).mCodBem);
         holder.mPBMSView.setText(mValues.get(position).mPBMS);
         holder.mNomeBemView.setText(mValues.get(position).mNomeBem);
-        holder.mAcessoryCellBem.setChecked(true);
+        holder.mAcessoryCellBem.setChecked(mValues.get(position).mStatus);
 
+        switch (mValues.get(position).mCategoryBem) {
+            case 3: {
+                holder.mCategoryBem.setImageResource(R.drawable.ic_domain);
+                break;
+            }
+            case 2: {
+                holder.mCategoryBem.setImageResource(R.drawable.ic_palette);
+                break;
+            }
+            case 1: {
+                holder.mCategoryBem.setImageResource(R.drawable.ic_devices);
+                break;
+            }
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
